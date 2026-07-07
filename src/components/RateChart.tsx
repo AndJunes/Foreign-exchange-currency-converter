@@ -16,15 +16,23 @@ export function RateChart({ points, range, pair }: RateChartProps) {
 
   // Keep the SVG coordinate system at 1 unit = 1 CSS px so axis text renders
   // at its real font size on any viewport (no letterboxing or shrunken labels).
+  // Updates are coalesced to one per frame so rapid resizes don't churn renders.
   useEffect(() => {
     const el = svgRef.current
     if (!el) return
+    let frame = 0
     const ro = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect
-      if (width > 0 && height > 0) setSize({ w: width, h: height })
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        if (width > 0 && height > 0) setSize({ w: width, h: height })
+      })
     })
     ro.observe(el)
-    return () => ro.disconnect()
+    return () => {
+      cancelAnimationFrame(frame)
+      ro.disconnect()
+    }
   }, [])
 
   const W = size.w
@@ -67,6 +75,22 @@ export function RateChart({ points, range, pair }: RateChartProps) {
     setHover(Math.max(0, Math.min(points.length - 1, idx)))
   }
 
+  // Keyboard access mirrors pointer hover: ←/→ step through data points,
+  // Home/End jump to the range edges, Escape clears the crosshair.
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (points.length === 0) return
+    const last = points.length - 1
+    const move = (idx: number) => {
+      e.preventDefault()
+      setHover(Math.max(0, Math.min(last, idx)))
+    }
+    if (e.key === 'ArrowLeft') move((hover ?? points.length) - 1)
+    else if (e.key === 'ArrowRight') move((hover ?? -1) + 1)
+    else if (e.key === 'Home') move(0)
+    else if (e.key === 'End') move(last)
+    else if (e.key === 'Escape') setHover(null)
+  }
+
   const hp = hover != null ? points[hover] : null
 
   return (
@@ -74,11 +98,14 @@ export function RateChart({ points, range, pair }: RateChartProps) {
       <svg
         ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
-        className="h-64 w-full touch-none sm:h-72"
-        role="img"
-        aria-label={`Rate history chart for ${pair} over ${range}`}
+        className="h-64 w-full touch-none rounded-lg sm:h-72"
+        role="application"
+        tabIndex={0}
+        aria-label={`Rate history chart for ${pair} over ${range}. Use left and right arrow keys to explore data points.`}
         onPointerMove={onMove}
         onPointerLeave={() => setHover(null)}
+        onKeyDown={onKeyDown}
+        onBlur={() => setHover(null)}
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -163,6 +190,11 @@ export function RateChart({ points, range, pair }: RateChartProps) {
           <span className="ml-2 text-muted">{formatAxisDate(hp.date, '1m')}</span>
         </div>
       )}
+
+      {/* Announce the focused data point to screen readers */}
+      <p className="sr-only" aria-live="polite">
+        {hp ? `${formatRate(hp.value)} on ${formatAxisDate(hp.date, '1m')}` : ''}
+      </p>
     </div>
   )
 }
