@@ -5,7 +5,14 @@ const BASE = 'https://api.frankfurter.dev/v1'
 // ---- tiny GET-JSON cache (per session) ----
 const cache = new Map<string, { at: number; data: unknown }>()
 
-async function getJson<T>(url: string, ttlMs = 60_000): Promise<T> {
+/** Cache lifetime per endpoint family, in one place so callers stay consistent. */
+const TTL = {
+  currencies: 3_600_000, // the currency list virtually never changes
+  market: 60_000, // latest rates: refresh often
+  history: 300_000, // historical ranges are immutable once published
+} as const
+
+async function getJson<T>(url: string, ttlMs: number): Promise<T> {
   const hit = cache.get(url)
   if (hit && Date.now() - hit.at < ttlMs) return hit.data as T
   const res = await fetch(url)
@@ -38,7 +45,7 @@ const RANGE_LOOKBACK: Record<RangeKey, number> = {
 
 /** All currencies with live ECB rates (≈30). */
 export async function fetchCurrencies(): Promise<Currency[]> {
-  const data = await getJson<Record<string, string>>(`${BASE}/currencies`, 3_600_000)
+  const data = await getJson<Record<string, string>>(`${BASE}/currencies`, TTL.currencies)
   return Object.entries(data)
     .map(([code, name]) => ({ code, name }))
     .sort((a, b) => a.code.localeCompare(b.code))
@@ -52,7 +59,7 @@ interface RangeResponse {
 /** Latest rates plus the prior business day, to derive a 24h change. */
 export async function fetchMarket(base: CurrencyCode = 'USD'): Promise<Market> {
   const url = `${BASE}/${daysAgo(10)}..${isoDate(new Date())}?base=${base}`
-  const data = await getJson<RangeResponse>(url, 60_000)
+  const data = await getJson<RangeResponse>(url, TTL.market)
   const dates = Object.keys(data.rates).sort()
   if (dates.length === 0) throw new Error('No market data available')
   const lastDate = dates[dates.length - 1]
@@ -76,7 +83,7 @@ export async function fetchTimeseries(
   const start = daysAgo(RANGE_LOOKBACK[range])
   const end = isoDate(new Date())
   const url = `${BASE}/${start}..${end}?base=${from}&symbols=${to}`
-  const data = await getJson<RangeResponse>(url, 300_000)
+  const data = await getJson<RangeResponse>(url, TTL.history)
   const points = Object.entries(data.rates)
     .map(([date, m]) => ({ date, value: m[to] }))
     .filter((p) => Number.isFinite(p.value))

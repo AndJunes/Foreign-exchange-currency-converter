@@ -10,7 +10,7 @@ export function formatAmount(value: number, maxFractionDigits = 2): string {
 /** Format an exchange rate. Rates can be tiny (JPY) or large, so we adapt. */
 export function formatRate(rate: number): string {
   if (!Number.isFinite(rate)) return '—'
-  const digits = rate >= 100 ? 2 : rate >= 1 ? 4 : 4
+  const digits = rate >= 100 ? 2 : 4
   return rate.toLocaleString('en-US', {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
