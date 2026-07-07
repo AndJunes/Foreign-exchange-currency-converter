@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { Currency, CurrencyCode } from '../types'
 import { splitPopular } from '../lib/popular'
 import { Flag } from './Flag'
-import { CheckIcon, ChevronDownIcon, SearchIcon } from './icons'
+import { CheckIcon, ChevronDownIcon, SearchIcon } from './Icons'
 
 interface CurrencyPickerProps {
   currencies: Currency[]
@@ -83,6 +83,9 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
     close()
   }
 
+  // Keyboard model: ↑/↓ move the highlighted option (clamped to the list),
+  // Enter selects it, Escape closes and returns focus to the trigger.
+  // Scrolling the highlight into view is handled by the effect above.
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -148,8 +151,6 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
           className={`animate-fade-up absolute top-full z-30 mt-2 flex max-h-[min(458px,70vh)] w-[min(376px,85vw)] flex-col gap-2.5 rounded-lg border border-control-border bg-surface-2 p-2 shadow-[0px_20px_60px_0px_rgba(10,10,10,0.5)] ${
             alignLeft ? 'left-0' : 'right-0'
           }`}
-          role="dialog"
-          aria-label={label ?? 'Currency picker'}
         >
           <div className="flex shrink-0 items-center gap-2.5 rounded-[6px] border border-muted px-3 py-3">
             <SearchIcon size={15} className="text-muted" />

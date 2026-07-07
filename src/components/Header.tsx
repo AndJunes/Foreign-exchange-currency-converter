@@ -1,5 +1,5 @@
 import type { Theme } from '../types'
-import { MoonIcon, SunIcon } from './icons'
+import { MoonIcon, SunIcon } from './Icons'
 
 interface HeaderProps {
   currencyCount: number | null

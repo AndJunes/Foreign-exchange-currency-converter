@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { TabKey } from '../types'
-import { ChevronDownIcon } from './icons'
+import { ChevronDownIcon } from './Icons'
 
 interface TabDef {
   key: TabKey

@@ -40,6 +40,9 @@ export default function App() {
 
   const [announcement, setAnnouncement] = useState('')
 
+  // Single parse point for the amount — children receive the numeric value.
+  const amountNum = useMemo(() => parseAmount(amount), [amount])
+
   // Apply theme.
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -76,15 +79,14 @@ export default function App() {
 
   // ---- log ----
   const logConversion = useCallback(() => {
-    const amt = parseAmount(amount)
-    if (!market || !Number.isFinite(amt) || amt <= 0) return
+    if (!market || !Number.isFinite(amountNum) || amountNum <= 0) return
     const rate = crossRate(market.latest, from, to)
-    const result = convert(market.latest, from, to, amt)
+    const result = convert(market.latest, from, to, amountNum)
     if (!Number.isFinite(result)) return
-    const entry: LogEntry = { id: makeId(), from, to, amount: amt, result, rate, at: Date.now() }
+    const entry: LogEntry = { id: makeId(), from, to, amount: amountNum, result, rate, at: Date.now() }
     setLog((prev) => [entry, ...prev].slice(0, 100))
-    setAnnouncement(`Logged ${amt} ${from} to ${to}`)
-  }, [amount, market, from, to, setLog])
+    setAnnouncement(`Logged ${amountNum} ${from} to ${to}`)
+  }, [amountNum, market, from, to, setLog])
 
   const deleteLog = useCallback((id: string) => setLog((prev) => prev.filter((e) => e.id !== id)), [setLog])
   const clearLog = useCallback(() => {
@@ -153,6 +155,7 @@ export default function App() {
         from={from}
         to={to}
         amount={amount}
+        amountNum={amountNum}
         isFavorite={isFavorite(from, to)}
         onAmountChange={setAmount}
         onFromChange={setFrom}
@@ -174,7 +177,7 @@ export default function App() {
               currencies={currencyList}
               market={market}
               base={from}
-              amount={amount}
+              amount={amountNum}
               isPinned={isFavorite}
               onTogglePin={toggleFavorite}
             />

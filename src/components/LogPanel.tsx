@@ -1,6 +1,6 @@
 import type { LogEntry } from '../types'
 import { formatAmount, relativeTime } from '../lib/format'
-import { DeleteIcon } from './icons'
+import { DeleteIcon } from './Icons'
 import { EmptyState } from './EmptyState'
 
 interface LogPanelProps {

@@ -1,16 +1,17 @@
 import { useMemo } from 'react'
 import type { Currency, CurrencyCode, Market } from '../types'
 import { convert, crossRate } from '../lib/rates'
-import { formatAmount, formatRate, parseAmount } from '../lib/format'
+import { formatAmount, formatRate } from '../lib/format'
 import { Flag } from './Flag'
-import { StarIcon } from './icons'
+import { StarIcon } from './Icons'
 import { EmptyState } from './EmptyState'
 
 interface ComparePanelProps {
   currencies: Currency[]
   market: Market | null
   base: CurrencyCode
-  amount: string
+  /** Amount already parsed by the parent (single parse point in App). */
+  amount: number
   isPinned: (from: CurrencyCode, to: CurrencyCode) => boolean
   onTogglePin: (from: CurrencyCode, to: CurrencyCode) => void
 }
@@ -18,21 +19,20 @@ interface ComparePanelProps {
 export function ComparePanel({
   currencies, market, base, amount, isPinned, onTogglePin,
 }: ComparePanelProps) {
-  const amountNum = parseAmount(amount)
   const rows = useMemo(() => {
-    if (!market || !Number.isFinite(amountNum)) return []
+    if (!market || !Number.isFinite(amount)) return []
     return currencies
       .filter((c) => c.code !== base)
       .map((c) => ({
         code: c.code,
         name: c.name,
         rate: crossRate(market.latest, base, c.code),
-        value: convert(market.latest, base, c.code, amountNum),
+        value: convert(market.latest, base, c.code, amount),
       }))
       .filter((r) => Number.isFinite(r.value))
-  }, [currencies, market, base, amountNum])
+  }, [currencies, market, base, amount])
 
-  if (!Number.isFinite(amountNum) || amountNum <= 0) {
+  if (!Number.isFinite(amount) || amount <= 0) {
     return (
       <EmptyState
         title="No comparison available"
@@ -46,7 +46,7 @@ export function ComparePanel({
       {/* Header: amount + base, pair count */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-base font-medium uppercase leading-[1.2] tracking-[1px] tnum">
-          {formatAmount(amountNum)} from {base}
+          {formatAmount(amount)} from {base}
         </h3>
         <p className="text-xs uppercase leading-[1.2] tracking-[0.5px] text-text/70 tnum">
           {rows.length} pairs

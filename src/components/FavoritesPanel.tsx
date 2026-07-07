@@ -2,7 +2,7 @@ import type { CurrencyCode, FavoritePair, Market } from '../types'
 import { change24h, crossRate } from '../lib/rates'
 import { formatRate } from '../lib/format'
 import { Delta } from './Delta'
-import { StarIcon } from './icons'
+import { StarIcon } from './Icons'
 import { EmptyState } from './EmptyState'
 
 interface FavoritesPanelProps {
@@ -66,7 +66,7 @@ export function FavoritesPanel({ favorites, market, onSelect, onUnpin }: Favorit
                 type="button"
                 onClick={() => onUnpin(f.from, f.to)}
                 aria-label={`Unpin ${f.from} to ${f.to}`}
-                aria-pressed
+                aria-pressed={true}
                 className="grid size-8 shrink-0 place-items-center rounded-lg border border-accent bg-surface-2 text-accent transition-all hover:bg-accent/10 active:scale-95"
               >
                 <StarIcon size={16} filled />

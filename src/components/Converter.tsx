@@ -1,16 +1,18 @@
 import { useId, useState } from 'react'
 import type { Currency, CurrencyCode, Market } from '../types'
 import { convert, crossRate } from '../lib/rates'
-import { formatAmount, formatRate, parseAmount } from '../lib/format'
+import { formatAmount, formatRate } from '../lib/format'
 import { CurrencyPicker } from './CurrencyPicker'
-import { ExchangeIcon, ExchangeVerticalIcon, StarIcon } from './icons'
+import { ExchangeIcon, ExchangeVerticalIcon, StarIcon } from './Icons'
 
 interface ConverterProps {
   currencies: Currency[]
   market: Market | null
   from: CurrencyCode
   to: CurrencyCode
+  /** Raw input string (kept for editing) and its parsed value from the parent. */
   amount: string
+  amountNum: number
   isFavorite: boolean
   onAmountChange: (v: string) => void
   onFromChange: (c: CurrencyCode) => void
@@ -22,11 +24,10 @@ interface ConverterProps {
 
 export function Converter(props: ConverterProps) {
   const {
-    currencies, market, from, to, amount, isFavorite,
+    currencies, market, from, to, amount, amountNum, isFavorite,
     onAmountChange, onFromChange, onToChange, onSwap, onToggleFavorite, onLog,
   } = props
 
-  const amountNum = parseAmount(amount)
   const rate = market ? crossRate(market.latest, from, to) : NaN
   const result = market && Number.isFinite(amountNum) ? convert(market.latest, from, to, amountNum) : NaN
   const canLog = Number.isFinite(result) && amountNum > 0

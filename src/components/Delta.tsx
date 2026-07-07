@@ -1,5 +1,5 @@
 import { formatPercent } from '../lib/format'
-import { TriangleDownIcon, TriangleUpIcon } from './icons'
+import { TriangleDownIcon, TriangleUpIcon } from './Icons'
 
 interface DeltaProps {
   pct: number
