@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import type { TabKey } from '../types'
+import { useOutsideClick } from '../hooks/useOutsideClick'
 import { ChevronDownIcon } from './Icons'
 
 interface TabDef {
@@ -83,15 +84,7 @@ function MobileTabsMenu({
   const triggerRef = useRef<HTMLButtonElement>(null)
   const activeTab = tabs.find((t) => t.key === active)
 
-  // Close on outside click.
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
-  }, [open])
+  useOutsideClick(rootRef, open, useCallback(() => setOpen(false), []))
 
   function commit(key: TabKey) {
     onChange(key)

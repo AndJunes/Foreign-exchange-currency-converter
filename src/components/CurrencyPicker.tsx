@@ -1,5 +1,6 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { Currency, CurrencyCode } from '../types'
+import { useOutsideClick } from '../hooks/useOutsideClick'
 import { splitPopular } from '../lib/popular'
 import { Flag } from './Flag'
 import { CheckIcon, ChevronDownIcon, SearchIcon } from './Icons'
@@ -52,19 +53,12 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
         const panelW = Math.min(376, window.innerWidth * 0.85)
         setAlignLeft(rect.right - panelW < 8)
       }
-      requestAnimationFrame(() => searchRef.current?.focus())
+      // The panel is committed by the time this effect runs, so focus directly.
+      searchRef.current?.focus()
     }
   }, [open])
 
-  // Close on outside click.
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
-  }, [open])
+  useOutsideClick(rootRef, open, useCallback(() => setOpen(false), []))
 
   // Keep the active option scrolled into view.
   useEffect(() => {
@@ -83,24 +77,28 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
     close()
   }
 
-  // Keyboard model: ↑/↓ move the highlighted option (clamped to the list),
-  // Enter selects it, Escape closes and returns focus to the trigger.
-  // Scrolling the highlight into view is handled by the effect above.
+  // Keyboard model: ↑/↓ move the highlight (clamped to the list), Enter
+  // selects it, Escape closes and returns focus to the trigger. Scrolling
+  // the highlight into view is handled by the effect above.
+  const moveHighlight = (delta: number) =>
+    setActive((a) => Math.max(0, Math.min(a + delta, flat.length - 1)))
+
+  const selectHighlighted = () => {
+    const c = flat[active]
+    if (c) commit(c.code)
+  }
+
   function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActive((a) => Math.min(a + 1, flat.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setActive((a) => Math.max(a - 1, 0))
-    } else if (e.key === 'Enter') {
-      e.preventDefault()
-      const c = flat[active]
-      if (c) commit(c.code)
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      close()
+    const actions: Record<string, () => void> = {
+      ArrowDown: () => moveHighlight(1),
+      ArrowUp: () => moveHighlight(-1),
+      Enter: selectHighlighted,
+      Escape: close,
     }
+    const action = actions[e.key]
+    if (!action) return
+    e.preventDefault()
+    action()
   }
 
   const renderRow = (c: Currency, idx: number) => {
