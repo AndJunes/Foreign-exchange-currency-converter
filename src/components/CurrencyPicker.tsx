@@ -91,14 +91,17 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
     onClose: close,
   })
 
+  // Options are plain divs (not buttons) so the option role isn't mixed with
+  // implicit button semantics; the search input drives them as a composite
+  // widget via aria-activedescendant and the shared keyboard model.
   const renderRow = (c: Currency, idx: number) => {
     const isSelected = c.code === value
     const isActive = idx === active
     return (
-      <button
+      <div
         key={c.code}
-        type="button"
         role="option"
+        id={`${listboxId}-option-${idx}`}
         aria-selected={isSelected}
         data-idx={idx}
         onMouseEnter={() => setActive(idx)}
@@ -111,7 +114,7 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
         <span className="shrink-0 text-sm leading-[1.2] tracking-[1px]">{c.code}</span>
         <span className="flex-1 truncate text-xs leading-[1.2] tracking-[0.5px] text-muted">{c.name}</span>
         {isSelected && <CheckIcon size={12} className="shrink-0 text-accent" />}
-      </button>
+      </div>
     )
   }
 
@@ -151,6 +154,7 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
               placeholder="Search currencies..."
               aria-label="Search currencies"
               aria-controls={listboxId}
+              aria-activedescendant={flat.length > 0 ? `${listboxId}-option-${active}` : undefined}
               autoComplete="off"
               className="w-full bg-transparent text-xs leading-[1.2] tracking-[0.5px] outline-none placeholder:text-muted"
             />
