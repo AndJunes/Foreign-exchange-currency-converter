@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { Currency, CurrencyCode } from '../types'
+import { useListNavigation } from '../hooks/useListNavigation'
 import { useOutsideClick } from '../hooks/useOutsideClick'
 import { splitPopular } from '../lib/popular'
 import { Flag } from './Flag'
@@ -77,29 +78,18 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
     close()
   }
 
-  // Keyboard model: ↑/↓ move the highlight (clamped to the list), Enter
-  // selects it, Escape closes and returns focus to the trigger. Scrolling
-  // the highlight into view is handled by the effect above.
-  const moveHighlight = (delta: number) =>
-    setActive((a) => Math.max(0, Math.min(a + delta, flat.length - 1)))
-
-  const selectHighlighted = () => {
-    const c = flat[active]
-    if (c) commit(c.code)
-  }
-
-  function onKeyDown(e: React.KeyboardEvent) {
-    const actions: Record<string, () => void> = {
-      ArrowDown: () => moveHighlight(1),
-      ArrowUp: () => moveHighlight(-1),
-      Enter: selectHighlighted,
-      Escape: close,
-    }
-    const action = actions[e.key]
-    if (!action) return
-    e.preventDefault()
-    action()
-  }
+  // Keyboard behaviour lives in the shared useListNavigation hook; keeping
+  // the highlight scrolled into view is handled by the effect above.
+  const onKeyDown = useListNavigation({
+    length: flat.length,
+    active,
+    onActiveChange: setActive,
+    onSelect: (i) => {
+      const c = flat[i]
+      if (c) commit(c.code)
+    },
+    onClose: close,
+  })
 
   const renderRow = (c: Currency, idx: number) => {
     const isSelected = c.code === value

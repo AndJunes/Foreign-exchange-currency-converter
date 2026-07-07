@@ -14,7 +14,7 @@ export function Header({ currencyCount, theme, onToggleTheme }: HeaderProps) {
         <img src="/assets/images/logo.svg" alt="FX Checker" width={139} height={26} className="h-6 w-auto" />
       </h1>
       <div className="flex items-center gap-3">
-        <p className="text-right text-[10px] uppercase leading-[1.2] tracking-[1px] text-muted sm:text-left sm:text-sm">
+        <p className="text-right text-[0.625rem] uppercase leading-[1.2] tracking-[1px] text-muted sm:text-left sm:text-sm">
           <span className="tnum">{currencyCount ?? '—'}</span> Currencies · EOD · ECB data
         </p>
         <button

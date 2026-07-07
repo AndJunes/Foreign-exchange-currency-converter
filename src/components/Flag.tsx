@@ -15,7 +15,7 @@ export function Flag({ code, size = 24, className = '' }: FlagProps) {
     return (
       <span
         style={style}
-        className={`inline-flex items-center justify-center rounded-full bg-surface-2 text-[9px] font-semibold text-muted ${className}`}
+        className={`inline-flex items-center justify-center rounded-full bg-surface-2 text-[0.5625rem] font-semibold text-muted ${className}`}
         aria-hidden
       >
         {code.slice(0, 2)}

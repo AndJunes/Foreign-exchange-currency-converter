@@ -182,7 +182,7 @@ function MobileTabsMenu({
 function Badge({ count }: { count?: number }) {
   if (count == null || count <= 0) return null
   return (
-    <span className="grid size-5 place-items-center rounded-full bg-accent-deep text-[10px] leading-none text-accent tnum">
+    <span className="grid size-5 place-items-center rounded-full bg-accent-deep text-[0.625rem] leading-none text-accent tnum">
       {count}
     </span>
   )

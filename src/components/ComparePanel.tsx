@@ -73,7 +73,7 @@ export function ComparePanel({
                 <p className="text-base leading-[1.2] tracking-[1px] tnum">
                   {formatAmount(r.value)}
                 </p>
-                <p className="text-[10px] leading-none text-muted tnum">@ {formatRate(r.rate)}</p>
+                <p className="text-[0.625rem] leading-none text-muted tnum">@ {formatRate(r.rate)}</p>
               </div>
               <button
                 type="button"

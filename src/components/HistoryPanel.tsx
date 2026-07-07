@@ -105,7 +105,7 @@ function Stat({
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface px-4 py-3 transition-colors hover:border-border-strong sm:px-5 lg:min-w-[140px]">
       <p className="text-sm uppercase leading-[1.2] tracking-[1px] text-text/70">{label}</p>
       <p
-        className={`text-[20px] font-normal leading-[1.2] tracking-[-0.5px] tnum ${
+        className={`text-[1.25rem] font-normal leading-[1.2] tracking-[-0.5px] tnum ${
           tone === 'pos' ? 'text-pos' : tone === 'neg' ? 'text-neg' : ''
         }`}
       >

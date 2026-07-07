@@ -60,7 +60,7 @@ export function FavoritesPanel({ favorites, market, onSelect, onUnpin }: Favorit
                 <span className="text-base leading-[1.2] tracking-[1px] tnum">
                   {formatRate(rate)}
                 </span>
-                <Delta pct={change} className="text-[10px] leading-none" />
+                <Delta pct={change} className="text-[0.625rem] leading-none" />
               </div>
               <button
                 type="button"

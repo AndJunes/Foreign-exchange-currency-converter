@@ -44,7 +44,7 @@ export function Converter(props: ConverterProps) {
 
   return (
     <div>
-      <h2 className="mb-4 text-[20px] font-normal uppercase leading-[1.2] tracking-[-0.5px] text-heading">
+      <h2 className="mb-4 text-[1.25rem] font-normal uppercase leading-[1.2] tracking-[-0.5px] text-heading">
         Check the rate
       </h2>
 
@@ -64,7 +64,7 @@ export function Converter(props: ConverterProps) {
               onChange={(e) => onAmountChange(e.target.value)}
               onFocus={() => setEditing(true)}
               onBlur={() => setEditing(false)}
-              className="min-w-0 flex-1 bg-transparent text-[40px] font-bold leading-none tracking-[-0.5px] tabular-nums outline-none placeholder:text-faint md:text-[32px] lg:text-[40px]"
+              className="min-w-0 flex-1 bg-transparent text-[2.5rem] font-bold leading-none tracking-[-0.5px] tabular-nums outline-none placeholder:text-faint md:text-[2rem] lg:text-[2.5rem]"
               placeholder="0.00"
             />
             <CurrencyPicker
@@ -95,7 +95,7 @@ export function Converter(props: ConverterProps) {
             <output
               id={receiveId}
               aria-live="polite"
-              className="block min-w-0 flex-1 truncate text-[40px] font-bold leading-none tracking-[-0.5px] tabular-nums text-accent md:text-[32px] lg:text-[40px]"
+              className="block min-w-0 flex-1 truncate text-[2.5rem] font-bold leading-none tracking-[-0.5px] tabular-nums text-accent md:text-[2rem] lg:text-[2.5rem]"
             >
               {Number.isFinite(result) ? formatAmount(result) : '—'}
             </output>

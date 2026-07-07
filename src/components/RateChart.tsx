@@ -121,7 +121,7 @@ export function RateChart({ points, range, pair }: RateChartProps) {
           return (
             <g key={i}>
               <line x1={PAD.left} y1={yy} x2={W - PAD.right} y2={yy} stroke="var(--border)" strokeWidth={1} />
-              <text x={PAD.left - 8} y={yy + 3} textAnchor="end" className="fill-[var(--muted)] text-[10px]">
+              <text x={PAD.left - 8} y={yy + 3} textAnchor="end" className="fill-[var(--muted)] text-[0.625rem]">
                 {formatRate(v)}
               </text>
             </g>
@@ -135,7 +135,7 @@ export function RateChart({ points, range, pair }: RateChartProps) {
             x={geom.x(i)}
             y={H - 8}
             textAnchor={i === 0 ? 'start' : i === lastTick ? 'end' : 'middle'}
-            className="fill-[var(--muted)] text-[10px]"
+            className="fill-[var(--muted)] text-[0.625rem]"
           >
             {formatAxisDate(points[i].date, range)}
           </text>
