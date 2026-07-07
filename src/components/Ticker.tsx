@@ -27,7 +27,12 @@ export function Ticker({ market }: TickerProps) {
   }, [market])
 
   return (
-    <section aria-label="Live markets" className="group overflow-hidden bg-surface">
+    <section
+      aria-label="Live markets"
+      // Focusable so keyboard users can pause the marquee, mirroring hover.
+      tabIndex={0}
+      className="group overflow-hidden bg-surface"
+    >
       <div className="flex items-stretch">
         <div className="z-20 flex shrink-0 items-center gap-2 bg-accent px-3 py-2 sm:px-4 sm:py-3">
           <span className="size-1.5 rounded-full bg-accent-ink" aria-hidden />
@@ -43,7 +48,7 @@ export function Ticker({ market }: TickerProps) {
             <div className="flex h-10 items-center px-5 text-xs text-muted">Loading rates…</div>
           ) : (
             <div
-              className="flex w-max animate-ticker items-center group-hover:[animation-play-state:paused]"
+              className="flex w-max animate-ticker items-center group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
               style={{ ['--ticker-duration' as string]: `${items.length * 3.2}s` }}
             >
               {[0, 1].map((dup) => (

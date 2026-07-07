@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { TabKey } from '../types'
 import { useOutsideClick } from '../hooks/useOutsideClick'
 import { ChevronDownIcon } from './Icons'
@@ -92,12 +92,40 @@ function MobileTabsMenu({
     triggerRef.current?.focus()
   }
 
+  // Focus the selected option when the menu opens so arrow keys start there.
+  useEffect(() => {
+    if (open) {
+      rootRef.current
+        ?.querySelector<HTMLButtonElement>('[role="option"][aria-selected="true"]')
+        ?.focus()
+    }
+  }, [open])
+
+  // Escape closes and restores focus; ↑/↓/Home/End move focus through the
+  // options while the listbox is open, matching the desktop tablist arrows.
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Escape') {
       e.preventDefault()
       setOpen(false)
       triggerRef.current?.focus()
+      return
     }
+    if (!open || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return
+    e.preventDefault()
+    const options = Array.from(
+      rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ?? [],
+    )
+    if (options.length === 0) return
+    const current = options.indexOf(document.activeElement as HTMLButtonElement)
+    const next =
+      e.key === 'Home'
+        ? 0
+        : e.key === 'End'
+          ? options.length - 1
+          : e.key === 'ArrowDown'
+            ? Math.min(current < 0 ? 0 : current + 1, options.length - 1)
+            : Math.max(current < 0 ? options.length - 1 : current - 1, 0)
+    options[next]?.focus()
   }
 
   return (
