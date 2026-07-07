@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest'
 import {
   formatAmount,
   formatAxisDate,
+  formatEditableAmount,
   formatFullDate,
   formatPercent,
   formatRate,
   formatSignedRate,
+  formatTimestamp,
   parseAmount,
   relativeTime,
 } from './format'
@@ -97,6 +99,23 @@ describe('relativeTime', () => {
 
   it('returns a short date after a day', () => {
     expect(relativeTime(now - 3 * 86_400_000, now)).toMatch(/Jul 3/)
+  })
+})
+
+describe('formatEditableAmount', () => {
+  it('groups thousands while keeping typed decimals', () => {
+    expect(formatEditableAmount(1000)).toBe('1,000')
+    expect(formatEditableAmount(1000.5)).toBe('1,000.5')
+  })
+
+  it('returns an empty string for non-finite values', () => {
+    expect(formatEditableAmount(NaN)).toBe('')
+  })
+})
+
+describe('formatTimestamp', () => {
+  it('shows the publication date of the EOD rate', () => {
+    expect(formatTimestamp('2026-05-14')).toBe('May 14')
   })
 })
 

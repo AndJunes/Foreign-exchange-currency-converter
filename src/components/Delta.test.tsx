@@ -17,6 +17,13 @@ describe('Delta', () => {
     expect(el.className).toContain('text-neg')
   })
 
+  it('renders exactly zero as neutral with no arrow', () => {
+    const { container } = render(<Delta pct={0} />)
+    const el = screen.getByText('0.00%')
+    expect(el.className).toContain('text-muted')
+    expect(container.querySelector('svg')).toBeNull()
+  })
+
   it('renders an em dash for non-finite values', () => {
     render(<Delta pct={NaN} />)
     expect(screen.getByText('—')).toBeTruthy()

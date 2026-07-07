@@ -60,9 +60,13 @@ interface RangeResponse {
   rates: Record<string, RateMap>
 }
 
+/** Lookback window for the "latest" market fetch: wide enough to always
+ *  contain at least two business days across weekends and holidays. */
+const MARKET_LOOKBACK_DAYS = 10
+
 /** Latest rates plus the prior business day, to derive a 24h change. */
 export async function fetchMarket(base: CurrencyCode = 'USD'): Promise<Market> {
-  const url = `${BASE}/${daysAgo(10)}..${isoDate(new Date())}?base=${base}`
+  const url = `${BASE}/${daysAgo(MARKET_LOOKBACK_DAYS)}..${isoDate(new Date())}?base=${base}`
   const data = await getJson<RangeResponse>(url, TTL.market)
   const dates = Object.keys(data.rates).sort()
   if (dates.length === 0) throw new Error('No market data available')

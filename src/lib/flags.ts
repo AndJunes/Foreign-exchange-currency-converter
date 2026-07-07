@@ -8,16 +8,10 @@ const AVAILABLE_FLAGS = new Set([
   'ro', 'ru', 'sa', 'se', 'sg', 'th', 'tr', 'tw', 'ua', 'us', 'vn', 'za',
 ])
 
-// A few currencies whose ISO prefix doesn't match their flag file.
-const FLAG_OVERRIDES: Record<string, string> = {
-  // ILS (Israel) has no flag asset in the design set -> handled by fallback.
-}
-
 /** Map an ISO-4217 currency code to its flag file basename (country code).
- *  The convention is the first two letters lowercased (USD -> us, EUR -> eu). */
+ *  The convention is the first two letters lowercased (USD -> us, EUR -> eu);
+ *  currencies without an asset (e.g. ILS) fall back to <Flag>'s text chip. */
 export function flagCode(currency: string): string | null {
-  const override = FLAG_OVERRIDES[currency]
-  if (override) return AVAILABLE_FLAGS.has(override) ? override : null
   const code = currency.slice(0, 2).toLowerCase()
   return AVAILABLE_FLAGS.has(code) ? code : null
 }
