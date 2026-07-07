@@ -1,0 +1,31 @@
+/* Styles owned by RateChart, colocated with the component. */
+
+@keyframes chart-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes chart-ping {
+  0% { transform: scale(1); opacity: 0.6; }
+  75%, 100% { transform: scale(3); opacity: 0; }
+}
+
+/* Line-draw reveal for the history chart (pathLength is normalised to 1) */
+.chart-draw {
+  stroke-dasharray: 1;
+  animation: chart-draw 0.9s ease-out both;
+}
+
+/* Pulsing halo on the chart's latest data point */
+.chart-ping {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: chart-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-draw,
+  .chart-ping {
+    animation: none !important;
+  }
+}

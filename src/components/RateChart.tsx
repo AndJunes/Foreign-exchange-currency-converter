@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { HistoryPoint, RangeKey } from '../types'
 import { formatAxisDate, formatFullDate, formatRate } from '../lib/format'
+import './RateChart.css'
 
 interface RateChartProps {
   points: HistoryPoint[]
