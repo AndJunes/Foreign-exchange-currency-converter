@@ -32,6 +32,10 @@ function daysAgo(n: number): string {
   return isoDate(d)
 }
 
+/** Cap on rendered chart points: enough resolution for a 944px-wide plot
+ *  while keeping the SVG path cheap to draw and animate. */
+const MAX_CHART_POINTS = 180
+
 const RANGE_LOOKBACK: Record<RangeKey, number> = {
   '1d': 5,
   '1w': 7,
@@ -88,7 +92,7 @@ export async function fetchTimeseries(
     .map(([date, m]) => ({ date, value: m[to] }))
     .filter((p) => Number.isFinite(p.value))
     .sort((a, b) => a.date.localeCompare(b.date))
-  return downsample(points, 180)
+  return downsample(points, MAX_CHART_POINTS)
 }
 
 /** Keep charts light: cap the number of rendered points, evenly sampled,

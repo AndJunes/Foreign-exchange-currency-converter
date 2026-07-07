@@ -2,18 +2,12 @@ import { useMemo } from 'react'
 import type { Market } from '../types'
 import { change24h, crossRate } from '../lib/rates'
 import { formatRate } from '../lib/format'
+import { TICKER_PAIRS } from '../lib/tickerPairs'
 import { Delta } from './Delta'
 
 interface TickerProps {
   market: Market | null
 }
-
-const TICKER_PAIRS: [string, string][] = [
-  ['USD', 'EUR'], ['EUR', 'USD'], ['USD', 'GBP'], ['GBP', 'USD'],
-  ['USD', 'JPY'], ['EUR', 'JPY'], ['EUR', 'GBP'], ['AUD', 'USD'],
-  ['USD', 'CAD'], ['USD', 'CHF'], ['NZD', 'USD'], ['USD', 'CNY'],
-  ['USD', 'MXN'], ['USD', 'SEK'], ['USD', 'SGD'], ['USD', 'INR'],
-]
 
 export function Ticker({ market }: TickerProps) {
   const items = useMemo(() => {
