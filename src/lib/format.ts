@@ -58,6 +58,13 @@ export function formatTimestamp(dateIso: string): string {
   return `${md} 16:00 CET`
 }
 
+/** Unambiguous full date, e.g. "May 14, 2026" — used where a data point is
+ *  announced or shown on its own (chart tooltip and screen reader output). */
+export function formatFullDate(dateIso: string): string {
+  const d = new Date(`${dateIso}T00:00:00`)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
 /** Axis-friendly date label for a range. */
 export function formatAxisDate(dateIso: string, range: string): string {
   const d = new Date(`${dateIso}T00:00:00`)

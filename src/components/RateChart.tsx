@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { HistoryPoint, RangeKey } from '../types'
-import { formatAxisDate, formatRate } from '../lib/format'
+import { formatAxisDate, formatFullDate, formatRate } from '../lib/format'
 
 interface RateChartProps {
   points: HistoryPoint[]
@@ -99,7 +99,8 @@ export function RateChart({ points, range, pair }: RateChartProps) {
         ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
         className="h-64 w-full touch-none rounded-lg sm:h-72"
-        role="application"
+        role="region"
+        aria-roledescription="interactive chart"
         tabIndex={0}
         aria-label={`Rate history chart for ${pair} over ${range}. Use left and right arrow keys to explore data points.`}
         onPointerMove={onMove}
@@ -187,13 +188,13 @@ export function RateChart({ points, range, pair }: RateChartProps) {
       {hp && (
         <div className="pointer-events-none absolute left-3 top-2 rounded-lg border border-border bg-elevated/95 px-3 py-1.5 text-xs shadow-lg">
           <span className="tnum font-medium">{formatRate(hp.value)}</span>
-          <span className="ml-2 text-muted">{formatAxisDate(hp.date, '1m')}</span>
+          <span className="ml-2 text-muted">{formatFullDate(hp.date)}</span>
         </div>
       )}
 
       {/* Announce the focused data point to screen readers */}
       <p className="sr-only" aria-live="polite">
-        {hp ? `${formatRate(hp.value)} on ${formatAxisDate(hp.date, '1m')}` : ''}
+        {hp ? `${formatRate(hp.value)} on ${formatFullDate(hp.date)}` : ''}
       </p>
     </div>
   )

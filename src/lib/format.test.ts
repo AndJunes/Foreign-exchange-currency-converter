@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   formatAmount,
   formatAxisDate,
+  formatFullDate,
   formatPercent,
   formatRate,
   formatSignedRate,
@@ -96,6 +97,12 @@ describe('relativeTime', () => {
 
   it('returns a short date after a day', () => {
     expect(relativeTime(now - 3 * 86_400_000, now)).toMatch(/Jul 3/)
+  })
+})
+
+describe('formatFullDate', () => {
+  it('shows month, day and year regardless of chart range', () => {
+    expect(formatFullDate('2026-05-14')).toBe('May 14, 2026')
   })
 })
 
