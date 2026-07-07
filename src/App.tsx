@@ -4,14 +4,16 @@ import { useCurrencies, useMarket } from './hooks/useMarketData'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { convert, crossRate } from './lib/rates'
 import { parseAmount } from './lib/format'
-import { Header } from './components/Header'
-import { Ticker } from './components/Ticker'
-import { Converter } from './components/Converter'
-import { Tabs } from './components/Tabs'
-import { HistoryPanel } from './components/HistoryPanel'
-import { ComparePanel } from './components/ComparePanel'
-import { FavoritesPanel } from './components/FavoritesPanel'
-import { LogPanel } from './components/LogPanel'
+import {
+  ComparePanel,
+  Converter,
+  FavoritesPanel,
+  Header,
+  HistoryPanel,
+  LogPanel,
+  Tabs,
+  Ticker,
+} from './components'
 
 function makeId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
