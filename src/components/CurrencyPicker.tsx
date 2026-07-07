@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { Currency, CurrencyCode } from '../types'
 import { useListNavigation } from '../hooks/useListNavigation'
-import { useOutsideClick } from '../hooks/useOutsideClick'
+import { usePopover } from '../hooks/usePopover'
 import { splitPopular } from '../lib/popular'
 import { Flag } from './Flag'
 import { CheckIcon, ChevronDownIcon, SearchIcon } from './Icons'
@@ -14,15 +14,21 @@ interface CurrencyPickerProps {
   label?: string
 }
 
+/** Panel geometry — single source of truth for the rendered width and the
+ *  flip-to-left calculation that keeps the panel on-screen. */
+const PANEL_MAX_W = 376
+const PANEL_VW = 0.85
+
 export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyPickerProps) {
-  const [open, setOpen] = useState(false)
+  const { open, toggle, close, rootRef, triggerRef } = usePopover<
+    HTMLDivElement,
+    HTMLButtonElement
+  >()
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   // Anchor the panel to the trigger's right edge unless that would push it
   // past the left edge of the viewport — then anchor left instead.
   const [alignLeft, setAlignLeft] = useState(false)
-  const rootRef = useRef<HTMLDivElement>(null)
-  const triggerRef = useRef<HTMLButtonElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const listboxId = useId()
@@ -51,15 +57,13 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
       setQuery('')
       const rect = rootRef.current?.getBoundingClientRect()
       if (rect) {
-        const panelW = Math.min(376, window.innerWidth * 0.85)
+        const panelW = Math.min(PANEL_MAX_W, window.innerWidth * PANEL_VW)
         setAlignLeft(rect.right - panelW < 8)
       }
       // The panel is committed by the time this effect runs, so focus directly.
       searchRef.current?.focus()
     }
-  }, [open])
-
-  useOutsideClick(rootRef, open, useCallback(() => setOpen(false), []))
+  }, [open, rootRef])
 
   // Keep the active option scrolled into view.
   useEffect(() => {
@@ -67,11 +71,6 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
     const el = listRef.current?.querySelector<HTMLElement>(`[data-idx="${active}"]`)
     el?.scrollIntoView({ block: 'nearest' })
   }, [active, open])
-
-  function close() {
-    setOpen(false)
-    triggerRef.current?.focus()
-  }
 
   function commit(code: CurrencyCode) {
     onChange(code)
@@ -111,9 +110,9 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
         }`}
       >
         <Flag code={c.code} size={20} />
-        <span className="shrink-0 text-sm leading-[1.2] tracking-[1px]">{c.code}</span>
-        <span className="flex-1 truncate text-xs leading-[1.2] tracking-[0.5px] text-muted">{c.name}</span>
-        {isSelected && <CheckIcon size={12} className="shrink-0 text-accent" />}
+        <span className="shrink-0 text-sm leading-[1.2] tracking-[0.0714em]">{c.code}</span>
+        <span className="flex-1 truncate text-xs leading-[1.2] tracking-[0.0417em] text-muted">{c.name}</span>
+        {isSelected && <CheckIcon size={12} className="shrink-0 text-accent-text" />}
       </div>
     )
   }
@@ -126,8 +125,8 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={label ? `${label}: ${value}` : value}
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg border border-control-border bg-control p-2.5 text-sm font-normal leading-[1.2] tracking-[1px] transition-all hover:brightness-110 active:scale-[0.97]"
+        onClick={toggle}
+        className="flex items-center gap-2 rounded-lg border border-control-border bg-control p-2.5 text-sm font-normal leading-[1.2] tracking-[0.0714em] transition-all hover:brightness-110 active:scale-[0.97]"
       >
         <Flag code={value} size={20} />
         <span>{value}</span>
@@ -139,7 +138,8 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
 
       {open && (
         <div
-          className={`animate-fade-up absolute top-full z-30 mt-2 flex max-h-[min(458px,70vh)] w-[min(376px,85vw)] flex-col gap-2.5 rounded-lg border border-control-border bg-surface-2 p-2 shadow-[0px_20px_60px_0px_rgba(10,10,10,0.5)] ${
+          style={{ width: `min(${PANEL_MAX_W}px, ${PANEL_VW * 100}vw)` }}
+          className={`animate-fade-up absolute top-full z-30 mt-2 flex max-h-[min(458px,70vh)] flex-col gap-2.5 rounded-lg border border-control-border bg-surface-2 p-2 shadow-[0px_20px_60px_0px_rgba(10,10,10,0.5)] ${
             alignLeft ? 'left-0' : 'right-0'
           }`}
         >
@@ -156,10 +156,15 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
               aria-controls={listboxId}
               aria-activedescendant={flat.length > 0 ? `${listboxId}-option-${active}` : undefined}
               autoComplete="off"
-              className="w-full bg-transparent text-xs leading-[1.2] tracking-[0.5px] outline-none placeholder:text-muted"
+              className="w-full bg-transparent text-xs leading-[1.2] tracking-[0.0417em] outline-none placeholder:text-muted"
             />
           </div>
 
+          {/* The empty message lives outside the listbox: only option/group
+              elements are valid owned children of role="listbox". */}
+          {flat.length === 0 && (
+            <p className="px-3 py-6 text-center text-sm text-muted">No currencies match “{query}”.</p>
+          )}
           <div
             ref={listRef}
             id={listboxId}
@@ -167,20 +172,17 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
             aria-label={label ?? 'Currencies'}
             className="scrollbar-thin flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto"
           >
-            {flat.length === 0 && (
-              <p className="px-3 py-6 text-center text-sm text-muted">No currencies match “{query}”.</p>
-            )}
             {popular.length > 0 && (
-              <>
+              <div role="group" aria-label="Popular" className="flex flex-col gap-1">
                 <GroupHeader label="Popular" count={popular.length} />
                 {popular.map((c, i) => renderRow(c, i))}
-              </>
+              </div>
             )}
             {other.length > 0 && (
-              <>
+              <div role="group" aria-label="Other currencies" className="flex flex-col gap-1">
                 <GroupHeader label="Other currencies" count={other.length} />
                 {other.map((c, i) => renderRow(c, popular.length + i))}
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -191,7 +193,11 @@ export function CurrencyPicker({ currencies, value, onChange, label }: CurrencyP
 
 function GroupHeader({ label, count }: { label: string; count: number }) {
   return (
-    <div className="flex shrink-0 items-center justify-between border-b border-border-strong p-2 text-xs uppercase leading-[1.2] tracking-[0.5px] text-muted">
+    // Visual header only — the enclosing role="group" carries the label.
+    <div
+      aria-hidden
+      className="flex shrink-0 items-center justify-between border-b border-border-strong p-2 text-xs uppercase leading-[1.2] tracking-[0.0417em] text-muted"
+    >
       <span>{label}</span>
       <span className="tnum">{count}</span>
     </div>

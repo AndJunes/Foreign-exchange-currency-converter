@@ -38,15 +38,24 @@ describe('Tabs (desktop tablist)', () => {
     expect(onChange).toHaveBeenCalledWith('compare')
   })
 
-  it('moves to the next tab with ArrowRight and wraps around', () => {
+  it('moves to the next tab with ArrowRight, wrapping and moving focus', () => {
     const onChange = renderTabs('log')
     fireEvent.keyDown(screen.getByRole('tablist'), { key: 'ArrowRight' })
     expect(onChange).toHaveBeenCalledWith('history')
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: /history/i }))
   })
 
   it('moves to the previous tab with ArrowLeft', () => {
     const onChange = renderTabs('compare')
     fireEvent.keyDown(screen.getByRole('tablist'), { key: 'ArrowLeft' })
+    expect(onChange).toHaveBeenCalledWith('history')
+  })
+
+  it('jumps to the first and last tabs with Home and End', () => {
+    const onChange = renderTabs('compare')
+    fireEvent.keyDown(screen.getByRole('tablist'), { key: 'End' })
+    expect(onChange).toHaveBeenCalledWith('log')
+    fireEvent.keyDown(screen.getByRole('tablist'), { key: 'Home' })
     expect(onChange).toHaveBeenCalledWith('history')
   })
 })

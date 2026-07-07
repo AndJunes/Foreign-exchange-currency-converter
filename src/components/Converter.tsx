@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import type { Currency, CurrencyCode, Market } from '../types'
 import { convert, crossRate } from '../lib/rates'
-import { formatAmount, formatRate } from '../lib/format'
+import { formatAmount, formatEditableAmount, formatRate } from '../lib/format'
 import { CurrencyPicker } from './CurrencyPicker'
 import { ExchangeIcon, ExchangeVerticalIcon, StarIcon } from './Icons'
 
@@ -38,13 +38,11 @@ export function Converter(props: ConverterProps) {
   // Show thousands separators (as in the design: "1,000") while not editing.
   const [editing, setEditing] = useState(false)
   const displayAmount =
-    editing || !Number.isFinite(amountNum)
-      ? amount
-      : amountNum.toLocaleString('en-US', { maximumFractionDigits: 20 })
+    editing || !Number.isFinite(amountNum) ? amount : formatEditableAmount(amountNum)
 
   return (
     <div>
-      <h2 className="mb-4 text-[1.25rem] font-normal uppercase leading-[1.2] tracking-[-0.5px] text-heading">
+      <h2 className="mb-4 text-[1.25rem] font-normal uppercase leading-[1.2] tracking-[-0.025em] text-heading">
         Check the rate
       </h2>
 
@@ -64,7 +62,7 @@ export function Converter(props: ConverterProps) {
               onChange={(e) => onAmountChange(e.target.value)}
               onFocus={() => setEditing(true)}
               onBlur={() => setEditing(false)}
-              className="min-w-0 flex-1 bg-transparent text-[2.5rem] font-bold leading-none tracking-[-0.5px] tabular-nums outline-none placeholder:text-faint md:text-[2rem] lg:text-[2.5rem]"
+              className="min-w-0 flex-1 bg-transparent text-[2.5rem] font-bold leading-none tracking-[-0.0125em] tabular-nums outline-none placeholder:text-faint md:text-[2rem] lg:text-[2.5rem]"
               placeholder="0.00"
             />
             <CurrencyPicker
@@ -81,7 +79,7 @@ export function Converter(props: ConverterProps) {
               type="button"
               onClick={onSwap}
               aria-label="Swap send and receive currencies"
-              className="group/swap pointer-events-auto grid size-12 place-items-center rounded-lg border border-border-strong bg-surface-2 text-text transition-colors hover:border-control-border hover:text-accent active:scale-95"
+              className="group/swap pointer-events-auto grid size-12 place-items-center rounded-lg border border-border-strong bg-surface-2 text-text transition-colors hover:border-control-border hover:text-accent-text active:scale-95"
             >
               <span className="grid place-items-center transition-transform duration-300 group-hover/swap:rotate-180">
                 <ExchangeVerticalIcon size={20} className="md:hidden" />
@@ -95,7 +93,7 @@ export function Converter(props: ConverterProps) {
             <output
               id={receiveId}
               aria-live="polite"
-              className="block min-w-0 flex-1 truncate text-[2.5rem] font-bold leading-none tracking-[-0.5px] tabular-nums text-accent md:text-[2rem] lg:text-[2.5rem]"
+              className="block min-w-0 flex-1 truncate text-[2.5rem] font-bold leading-none tracking-[-0.0125em] tabular-nums text-accent-text md:text-[2rem] lg:text-[2.5rem]"
             >
               {Number.isFinite(result) ? formatAmount(result) : '—'}
             </output>
@@ -110,7 +108,7 @@ export function Converter(props: ConverterProps) {
 
         {/* Rate + actions */}
         <div className="flex flex-col gap-4 border-t border-dashed border-border-strong px-4 py-4 sm:px-5 md:flex-row md:items-center md:justify-between">
-          <p className="text-center text-xs leading-[1.2] tracking-[0.5px] tnum md:text-left" aria-live="polite">
+          <p className="text-center text-xs leading-[1.2] tracking-[0.0417em] tnum md:text-left" aria-live="polite">
             {Number.isFinite(rate) ? (
               <>1 {from} = {formatRate(rate)} {to}</>
             ) : (
@@ -123,7 +121,7 @@ export function Converter(props: ConverterProps) {
               type="button"
               onClick={onToggleFavorite}
               aria-pressed={isFavorite}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium uppercase leading-[1.3] tracking-[0.5px] transition-all active:scale-[0.97] ${
+              className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium uppercase leading-[1.3] tracking-[0.0417em] transition-all active:scale-[0.97] ${
                 isFavorite
                   ? 'border-accent bg-accent text-accent-ink'
                   : 'border-border-strong bg-surface-2 text-text hover:border-control-border'
@@ -136,7 +134,7 @@ export function Converter(props: ConverterProps) {
               type="button"
               onClick={onLog}
               disabled={!canLog}
-              className="rounded-lg border border-accent px-3 py-2 text-xs font-medium uppercase leading-[1.3] tracking-[0.5px] text-text transition-all hover:bg-accent/10 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+              className="rounded-lg border border-accent px-3 py-2 text-xs font-medium uppercase leading-[1.3] tracking-[0.0417em] text-text transition-all hover:bg-accent/10 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
             >
               Log conversion
             </button>
@@ -164,7 +162,7 @@ function Field({
     >
       <label
         htmlFor={htmlFor}
-        className="block text-sm font-normal uppercase leading-[1.2] tracking-[1px] text-label"
+        className="block text-sm font-normal uppercase leading-[1.2] tracking-[0.0714em] text-label"
       >
         {label}
       </label>

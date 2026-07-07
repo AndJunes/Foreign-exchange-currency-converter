@@ -9,6 +9,9 @@ interface TickerProps {
   market: Market | null
 }
 
+/** Marquee speed: seconds each pair stays on screen per loop. */
+const SECONDS_PER_ITEM = 3.2
+
 export function Ticker({ market }: TickerProps) {
   const items = useMemo(() => {
     if (!market) return []
@@ -30,7 +33,7 @@ export function Ticker({ market }: TickerProps) {
       <div className="flex items-stretch">
         <div className="z-20 flex shrink-0 items-center gap-2 bg-accent px-3 py-2 sm:px-4 sm:py-3">
           <span className="size-1.5 rounded-full bg-accent-ink" aria-hidden />
-          <span className="text-xs font-medium uppercase leading-[1.3] tracking-[0.5px] text-accent-ink">
+          <span className="text-xs font-medium uppercase leading-[1.3] tracking-[0.0417em] text-accent-ink">
             Live markets
           </span>
         </div>
@@ -43,14 +46,14 @@ export function Ticker({ market }: TickerProps) {
           ) : (
             <div
               className="flex w-max animate-ticker items-center group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
-              style={{ ['--ticker-duration' as string]: `${items.length * 3.2}s` }}
+              style={{ ['--ticker-duration' as string]: `${items.length * SECONDS_PER_ITEM}s` }}
             >
               {[0, 1].map((dup) => (
                 <ul key={dup} className="flex items-stretch" aria-hidden={dup === 1}>
                   {items.map((i) => (
                     <li
                       key={`${dup}-${i.from}${i.to}`}
-                      className="flex items-center gap-2.5 whitespace-nowrap border-r border-border-strong px-4 py-2 text-xs leading-[1.2] tracking-[0.5px] sm:px-5 sm:py-3"
+                      className="flex items-center gap-2.5 whitespace-nowrap border-r border-border-strong px-4 py-2 text-xs leading-[1.2] tracking-[0.0417em] sm:px-5 sm:py-3"
                     >
                       <span className="text-muted">
                         {i.from}/{i.to}

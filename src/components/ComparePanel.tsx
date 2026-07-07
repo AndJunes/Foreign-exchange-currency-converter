@@ -45,10 +45,10 @@ export function ComparePanel({
     <div className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-4 sm:p-5">
       {/* Header: amount + base, pair count */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-medium uppercase leading-[1.2] tracking-[1px] tnum">
+        <h3 className="text-base font-medium uppercase leading-[1.2] tracking-[0.0625em] tnum">
           {formatAmount(amount)} from {base}
         </h3>
-        <p className="text-xs uppercase leading-[1.2] tracking-[0.5px] text-text/70 tnum">
+        <p className="text-xs uppercase leading-[1.2] tracking-[0.0417em] text-text/70 tnum">
           {rows.length} pairs
         </p>
       </div>
@@ -64,13 +64,13 @@ export function ComparePanel({
             >
               <Flag code={r.code} size={20} />
               <div className="min-w-0 flex-1">
-                <p className="text-sm leading-[1.2] tracking-[1px]">{r.code}</p>
-                <p className="mt-1 truncate text-xs leading-[1.2] tracking-[0.5px] text-muted">
+                <p className="text-sm leading-[1.2] tracking-[0.0714em]">{r.code}</p>
+                <p className="mt-1 truncate text-xs leading-[1.2] tracking-[0.0417em] text-muted">
                   {r.name}
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1.5 text-right">
-                <p className="text-base leading-[1.2] tracking-[1px] tnum">
+                <p className="text-base leading-[1.2] tracking-[0.0625em] tnum">
                   {formatAmount(r.value)}
                 </p>
                 <p className="text-[0.625rem] leading-none text-muted tnum">@ {formatRate(r.rate)}</p>

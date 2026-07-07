@@ -30,6 +30,7 @@
   --color-muted: var(--muted);
   --color-faint: var(--faint);
   --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
   --color-accent-ink: var(--accent-ink);
   --color-accent-deep: var(--accent-deep);
   --color-pos: var(--pos);
@@ -59,8 +60,9 @@
   --heading: #ffffff;
   --label: #c6c6c6; /* neutral 100 — field labels */
   --muted: #9d9d9d; /* neutral 200 */
-  --faint: #757578;
+  --faint: #8b8b8e; /* ≥4.5:1 on --bg for small text */
   --accent: #cef739; /* lime 500 */
+  --accent-text: #cef739; /* accent used as text — same as accent on dark */
   --accent-ink: #0a0a0a;
   --accent-deep: #283300; /* lime 800 — badge fill */
   --pos: #42eb05;
@@ -83,8 +85,9 @@
   --heading: #14181d;
   --label: #4a525c;
   --muted: #5b6470;
-  --faint: #8a94a0;
+  --faint: #5d6673; /* ≥4.5:1 on light surfaces */
   --accent: #a4c62a;
+  --accent-text: #4d6410; /* ≥4.5:1 accent for text on light surfaces */
   --accent-ink: #0d1004;
   --accent-deep: #e9f2c6;
   --pos: #16a34a;
@@ -141,15 +144,6 @@
   button:disabled {
     cursor: not-allowed;
   }
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-  }
 }
 
 @layer utilities {
@@ -163,8 +157,6 @@
     background: var(--border-strong);
     border-radius: 999px;
   }
-  .no-scrollbar { scrollbar-width: none; }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

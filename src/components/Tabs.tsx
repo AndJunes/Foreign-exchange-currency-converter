@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 import type { TabKey } from '../types'
-import { useOutsideClick } from '../hooks/useOutsideClick'
+import { usePopover } from '../hooks/usePopover'
 import { ChevronDownIcon } from './Icons'
 
 interface TabDef {
@@ -17,14 +17,20 @@ interface TabsProps {
 }
 
 export function Tabs({ tabs, active, onChange, panelId }: TabsProps) {
+  // APG tablist arrows: selection and focus move together (roving tabindex),
+  // wrapping at the edges; Home/End jump to the first/last tab.
   function onKeyDown(e: React.KeyboardEvent) {
     const idx = tabs.findIndex((t) => t.key === active)
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      e.preventDefault()
-      const dir = e.key === 'ArrowRight' ? 1 : -1
-      const next = (idx + dir + tabs.length) % tabs.length
-      onChange(tabs[next].key)
-    }
+    let next = -1
+    if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length
+    else if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length
+    else if (e.key === 'Home') next = 0
+    else if (e.key === 'End') next = tabs.length - 1
+    if (next < 0) return
+    e.preventDefault()
+    const key = tabs[next].key
+    onChange(key)
+    document.getElementById(`tab-${key}`)?.focus()
   }
 
   return (
@@ -53,7 +59,7 @@ export function Tabs({ tabs, active, onChange, panelId }: TabsProps) {
               onClick={() => onChange(t.key)}
               className="group flex flex-col items-center"
             >
-              <span className="flex h-10 items-center justify-center gap-2 px-4 text-base font-normal uppercase leading-[1.2] tracking-[1px] text-text">
+              <span className="flex h-10 items-center justify-center gap-2 px-4 text-base font-normal uppercase leading-[1.2] tracking-[0.0625em] text-text">
                 {t.label}
                 <Badge count={t.badge} />
               </span>
@@ -79,17 +85,15 @@ function MobileTabsMenu({
   active: TabKey
   onChange: (key: TabKey) => void
 }) {
-  const [open, setOpen] = useState(false)
-  const rootRef = useRef<HTMLDivElement>(null)
-  const triggerRef = useRef<HTMLButtonElement>(null)
+  const { open, toggle, close, rootRef, triggerRef } = usePopover<
+    HTMLDivElement,
+    HTMLButtonElement
+  >()
   const activeTab = tabs.find((t) => t.key === active)
-
-  useOutsideClick(rootRef, open, useCallback(() => setOpen(false), []))
 
   function commit(key: TabKey) {
     onChange(key)
-    setOpen(false)
-    triggerRef.current?.focus()
+    close()
   }
 
   // Focus the selected option when the menu opens so arrow keys start there.
@@ -99,15 +103,14 @@ function MobileTabsMenu({
         ?.querySelector<HTMLButtonElement>('[role="option"][aria-selected="true"]')
         ?.focus()
     }
-  }, [open])
+  }, [open, rootRef])
 
   // Escape closes and restores focus; ↑/↓/Home/End move focus through the
   // options while the listbox is open, matching the desktop tablist arrows.
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Escape') {
       e.preventDefault()
-      setOpen(false)
-      triggerRef.current?.focus()
+      close()
       return
     }
     if (!open || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return
@@ -136,8 +139,8 @@ function MobileTabsMenu({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label="Select panel"
-        onClick={() => setOpen((o) => !o)}
-        className="flex h-10 w-full items-center justify-between rounded-lg border border-control-border bg-surface px-3 text-base font-normal uppercase leading-[1.2] tracking-[1px] text-text transition-colors hover:border-border-strong"
+        onClick={toggle}
+        className="flex h-10 w-full items-center justify-between rounded-lg border border-control-border bg-surface px-3 text-base font-normal uppercase leading-[1.2] tracking-[0.0625em] text-text transition-colors hover:border-border-strong"
       >
         <span className="flex items-center gap-2">
           {activeTab?.label}
@@ -164,7 +167,7 @@ function MobileTabsMenu({
                 role="option"
                 aria-selected={selected}
                 onClick={() => commit(t.key)}
-                className={`flex h-10 w-full items-center justify-between rounded-[10px] px-2 text-base font-normal uppercase leading-[1.2] tracking-[1px] text-text transition-colors ${
+                className={`flex h-10 w-full items-center justify-between rounded-[10px] px-2 text-base font-normal uppercase leading-[1.2] tracking-[0.0625em] text-text transition-colors ${
                   selected ? 'bg-surface-2' : 'hover:bg-surface-2/60'
                 }`}
               >
@@ -182,7 +185,7 @@ function MobileTabsMenu({
 function Badge({ count }: { count?: number }) {
   if (count == null || count <= 0) return null
   return (
-    <span className="grid size-5 place-items-center rounded-full bg-accent-deep text-[0.625rem] leading-none text-accent tnum">
+    <span className="grid size-5 place-items-center rounded-full bg-accent-deep text-[0.625rem] leading-none text-accent-text tnum">
       {count}
     </span>
   )

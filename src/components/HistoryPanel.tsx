@@ -52,7 +52,7 @@ export function HistoryPanel({ from, to, range, onRangeChange }: HistoryPanelPro
               type="button"
               onClick={() => onRangeChange(r)}
               aria-pressed={r === range}
-              className={`rounded-lg px-3 py-2.5 text-xs font-normal uppercase leading-[1.2] tracking-[0.5px] transition-colors sm:px-4 sm:py-3 ${
+              className={`rounded-lg px-3 py-2.5 text-xs font-normal uppercase leading-[1.2] tracking-[0.0417em] transition-colors sm:px-4 sm:py-3 ${
                 r === range ? 'bg-border-strong text-text' : 'text-muted hover:text-text'
               }`}
             >
@@ -65,9 +65,9 @@ export function HistoryPanel({ from, to, range, onRangeChange }: HistoryPanelPro
       {/* Chart card */}
       <div className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-base font-medium leading-[1.2] tracking-[1px]">{pair}</h3>
+          <h3 className="text-base font-medium leading-[1.2] tracking-[0.0625em]">{pair}</h3>
           {stats && (
-            <p className="text-xs uppercase leading-[1.2] tracking-[0.5px] text-text/70 tnum">
+            <p className="text-xs uppercase leading-[1.2] tracking-[0.0417em] text-text/70 tnum">
               {formatRate(stats.last)} · {formatTimestamp(stats.date)}
             </p>
           )}
@@ -103,9 +103,9 @@ function Stat({
 }) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-surface px-4 py-3 transition-colors hover:border-border-strong sm:px-5 lg:min-w-[140px]">
-      <p className="text-sm uppercase leading-[1.2] tracking-[1px] text-text/70">{label}</p>
+      <p className="text-sm uppercase leading-[1.2] tracking-[0.0714em] text-text/70">{label}</p>
       <p
-        className={`text-[1.25rem] font-normal leading-[1.2] tracking-[-0.5px] tnum ${
+        className={`text-[1.25rem] font-normal leading-[1.2] tracking-[-0.025em] tnum ${
           tone === 'pos' ? 'text-pos' : tone === 'neg' ? 'text-neg' : ''
         }`}
       >

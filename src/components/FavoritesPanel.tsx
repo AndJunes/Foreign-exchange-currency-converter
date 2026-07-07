@@ -26,10 +26,10 @@ export function FavoritesPanel({ favorites, market, onSelect, onUnpin }: Favorit
     <div className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-4 sm:p-5">
       {/* Header: title + count */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-medium uppercase leading-[1.2] tracking-[1px]">
+        <h3 className="text-base font-medium uppercase leading-[1.2] tracking-[0.0625em]">
           Pinned pairs
         </h3>
-        <p className="text-xs uppercase leading-[1.2] tracking-[0.5px] text-text/70 tnum">
+        <p className="text-xs uppercase leading-[1.2] tracking-[0.0417em] text-text/70 tnum">
           {favorites.length} favorites
         </p>
       </div>
@@ -48,7 +48,7 @@ export function FavoritesPanel({ favorites, market, onSelect, onUnpin }: Favorit
                 type="button"
                 onClick={() => onSelect(f.from, f.to)}
                 aria-label={`Load ${f.from} to ${f.to} into the converter`}
-                className="flex min-w-0 flex-1 items-center gap-2 text-left text-sm leading-[1.2] tracking-[1px]"
+                className="flex min-w-0 flex-1 items-center gap-2 text-left text-sm leading-[1.2] tracking-[0.0714em]"
               >
                 {f.from}
                 <span className="text-xs text-muted" aria-hidden>
@@ -57,7 +57,7 @@ export function FavoritesPanel({ favorites, market, onSelect, onUnpin }: Favorit
                 {f.to}
               </button>
               <div className="flex shrink-0 flex-col items-end gap-1.5 text-right">
-                <span className="text-base leading-[1.2] tracking-[1px] tnum">
+                <span className="text-base leading-[1.2] tracking-[0.0625em] tnum">
                   {formatRate(rate)}
                 </span>
                 <Delta pct={change} className="text-[0.625rem] leading-none" />

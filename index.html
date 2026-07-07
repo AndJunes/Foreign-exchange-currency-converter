@@ -7,6 +7,16 @@
     <meta name="color-scheme" content="dark light" />
     <meta name="description" content="FX Checker — convert between currencies with live ECB exchange rates, rate-history charts, multi-currency compare, favorites and a conversion log." />
     <title>FX Checker</title>
+    <script>
+      // Apply the persisted theme before first paint to avoid a flash of the
+      // wrong theme for returning light-theme users.
+      try {
+        var theme = JSON.parse(localStorage.getItem('fx.theme'))
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch (e) {
+        /* ignore — fall back to the default theme */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

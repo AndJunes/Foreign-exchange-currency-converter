@@ -203,7 +203,7 @@ export function RateChart({ points, range, pair }: RateChartProps) {
 
 function pickXTicks(n: number, count: number): number[] {
   if (n === 0) return []
-  if (n <= 2) return [0, n - 1].filter((v, i, a) => a.indexOf(v) === i)
+  if (n <= 2) return [...new Set([0, n - 1])]
   const out: number[] = []
   for (let i = 0; i < count; i++) out.push(Math.round((i / (count - 1)) * (n - 1)))
   return [...new Set(out)]

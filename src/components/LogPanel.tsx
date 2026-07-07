@@ -23,17 +23,17 @@ export function LogPanel({ entries, onClear, onDelete }: LogPanelProps) {
     <div className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-4 sm:p-5">
       {/* Header: title + count + clear */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-medium uppercase leading-[1.2] tracking-[1px]">
+        <h3 className="text-base font-medium uppercase leading-[1.2] tracking-[0.0625em]">
           Conversion log
         </h3>
         <div className="flex items-center gap-4">
-          <p className="text-xs uppercase leading-[1.2] tracking-[0.5px] text-text/70 tnum">
+          <p className="text-xs uppercase leading-[1.2] tracking-[0.0417em] text-text/70 tnum">
             {entries.length} logged
           </p>
           <button
             type="button"
             onClick={onClear}
-            className="rounded-lg border border-control-border bg-surface-2 px-3 py-2 text-xs uppercase leading-[1.2] tracking-[0.5px] text-muted transition-colors hover:border-neg/50 hover:text-neg"
+            className="rounded-lg border border-control-border bg-surface-2 px-3 py-2 text-xs uppercase leading-[1.2] tracking-[0.0417em] text-muted transition-colors hover:border-neg/50 hover:text-neg"
           >
             Clear all
           </button>
@@ -47,10 +47,10 @@ export function LogPanel({ entries, onClear, onDelete }: LogPanelProps) {
             key={e.id}
             className="flex items-center gap-3 rounded-[10px] border border-border-strong bg-surface-2 p-3 transition-colors hover:border-control-border sm:gap-4 sm:p-4"
           >
-            <span className="w-12 shrink-0 text-sm uppercase leading-[1.2] tracking-[1px] text-muted tnum sm:w-16">
+            <span className="w-12 shrink-0 text-sm uppercase leading-[1.2] tracking-[0.0714em] text-muted tnum sm:w-16">
               {relativeTime(e.at)}
             </span>
-            <p className="flex min-w-0 flex-1 items-center gap-2 text-sm leading-[1.2] tracking-[1px]">
+            <p className="flex min-w-0 flex-1 items-center gap-2 text-sm leading-[1.2] tracking-[0.0714em]">
               {e.from}
               <span className="text-xs text-muted" aria-hidden>
                 →
@@ -58,9 +58,9 @@ export function LogPanel({ entries, onClear, onDelete }: LogPanelProps) {
               <span className="sr-only">to</span>
               {e.to}
             </p>
-            <div className="flex shrink-0 items-center justify-end gap-3 text-right text-sm leading-[1.2] tracking-[1px] tnum sm:gap-5 sm:text-base">
+            <div className="flex shrink-0 items-center justify-end gap-3 text-right text-sm leading-[1.2] tracking-[0.0625em] tnum sm:gap-5 sm:text-base">
               <span className="text-label">{formatAmount(e.amount)}</span>
-              <span className="text-accent">{formatAmount(e.result)}</span>
+              <span className="text-accent-text">{formatAmount(e.result)}</span>
             </div>
             <button
               type="button"
