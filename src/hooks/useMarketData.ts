@@ -1,70 +1,29 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { fetchCurrencies, fetchMarket, fetchTimeseries } from '../lib/api'
-import type { Currency, CurrencyCode, HistoryPoint, Market, RangeKey } from '../types'
+import { useAsyncData } from './useAsyncData'
+import type { Async } from './useAsyncData'
+import type { Currency, CurrencyCode, HistoryPoint, RangeKey } from '../types'
 
-interface Async<T> {
-  data: T | null
-  loading: boolean
-  error: string | null
-}
+export type { Async }
+
+/** ECB rates are end-of-day, so an hourly poll is more than enough. */
+const MARKET_REFRESH_MS = 3_600_000
 
 /** Available currencies (fetched once). */
 export function useCurrencies(): Async<Currency[]> {
-  const [state, setState] = useState<Async<Currency[]>>({ data: null, loading: true, error: null })
-  useEffect(() => {
-    let alive = true
-    fetchCurrencies()
-      .then((data) => alive && setState({ data, loading: false, error: null }))
-      .catch((e: unknown) =>
-        alive && setState({ data: null, loading: false, error: String(e) }),
-      )
-    return () => {
-      alive = false
-    }
-  }, [])
-  return state
+  return useAsyncData(fetchCurrencies)
 }
 
-/** Market snapshot for a base currency, refreshable and auto-refreshed hourly. */
+/** Market snapshot for a base currency, refreshable and auto-refreshed
+ *  hourly. Keeps the last good snapshot when a refresh fails so the UI
+ *  never blanks over a transient network error. */
 export function useMarket(base: CurrencyCode) {
-  const [state, setState] = useState<Async<Market>>({ data: null, loading: true, error: null })
-
-  const load = useCallback(() => {
-    let alive = true
-    setState((s) => ({ ...s, loading: true }))
-    fetchMarket(base)
-      .then((data) => alive && setState({ data, loading: false, error: null }))
-      .catch((e: unknown) =>
-        alive && setState((s) => ({ data: s.data, loading: false, error: String(e) })),
-      )
-    return () => {
-      alive = false
-    }
-  }, [base])
-
-  useEffect(() => load(), [load])
-  useEffect(() => {
-    const id = setInterval(() => load(), 3_600_000)
-    return () => clearInterval(id)
-  }, [load])
-
-  return { ...state, refresh: load }
+  const fetcher = useCallback(() => fetchMarket(base), [base])
+  return useAsyncData(fetcher, { keepStaleData: true, refreshMs: MARKET_REFRESH_MS })
 }
 
 /** Rate history for the active pair + range. */
 export function useHistory(from: CurrencyCode, to: CurrencyCode, range: RangeKey): Async<HistoryPoint[]> {
-  const [state, setState] = useState<Async<HistoryPoint[]>>({ data: null, loading: true, error: null })
-  useEffect(() => {
-    let alive = true
-    setState({ data: null, loading: true, error: null })
-    fetchTimeseries(from, to, range)
-      .then((data) => alive && setState({ data, loading: false, error: null }))
-      .catch((e: unknown) =>
-        alive && setState({ data: null, loading: false, error: String(e) }),
-      )
-    return () => {
-      alive = false
-    }
-  }, [from, to, range])
-  return state
+  const fetcher = useCallback(() => fetchTimeseries(from, to, range), [from, to, range])
+  return useAsyncData(fetcher)
 }
