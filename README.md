@@ -85,11 +85,12 @@ const ro = new ResizeObserver(([entry]) => {
 
 - **Deriving cross rates from a single base** (`rate(from→to) = rates[to] / rates[from]`) means one API call powers the converter, the ticker, and the compare panel.
 
+- **React state updaters must stay pure.** I originally fired a screen-reader announcement from inside a `setFavorites` updater; StrictMode's double-invocation announced every pin twice. Computing the toggle outcome first and announcing outside the updater fixed it and made the logic simpler.
+
 ### Continued development
 
 - Offline caching of the last known rates (Service Worker)
 - E2E coverage of the core convert → log flow with Playwright
-- Extract the popover open/close/focus-return behaviour shared by the currency picker and the mobile tabs menu into a reusable hook
 
 ### Useful resources
 
@@ -125,7 +126,7 @@ pnpm test         # run the Vitest suite once
 pnpm test:watch   # watch mode
 ```
 
-The suite covers the rate math (`crossRate`, `convert`, `change24h`), the formatting helpers (amount parsing/formatting, relative time, axis dates), and component behaviour (tabs keyboard navigation, mobile dropdown, delta rendering).
+The suite covers the rate math (`crossRate`, `convert`, `change24h`), the formatting helpers (amount parsing/formatting, relative time, axis dates), component behaviour (picker keyboard flow, chart keyboard exploration, tabs, log panel, delta rendering), and the shared hooks (async lifecycle with stale-data-on-error and late-response races, localStorage validation, list keyboard navigation).
 
 ### Project structure
 
