@@ -21,6 +21,14 @@ describe('crossRate', () => {
     expect(crossRate(rates, 'USD', 'GBP')).toBeNaN()
     expect(crossRate(rates, 'GBP', 'USD')).toBeNaN()
   })
+
+  it('treats 0 as a valid target rate', () => {
+    expect(crossRate({ ...rates, XXX: 0 }, 'USD', 'XXX')).toBe(0)
+  })
+
+  it('returns NaN instead of Infinity for a 0 divisor', () => {
+    expect(crossRate({ ...rates, XXX: 0 }, 'XXX', 'USD')).toBeNaN()
+  })
 })
 
 describe('convert', () => {

@@ -5,7 +5,9 @@ import type { CurrencyCode, Market, RateMap } from '../types'
 export function crossRate(rates: RateMap, from: CurrencyCode, to: CurrencyCode): number {
   const f = rates[from]
   const t = rates[to]
-  if (!f || !t) return NaN
+  // Explicit numeric checks: 0 is a legitimate rate value for `to`,
+  // while a 0 divisor would produce Infinity rather than a real rate.
+  if (!Number.isFinite(f) || !Number.isFinite(t) || f === 0) return NaN
   return t / f
 }
 
