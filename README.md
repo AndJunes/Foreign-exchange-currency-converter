@@ -44,8 +44,9 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://your-solution-url.com)
+- Solution URL: [Frontend Mentor solution](https://www.frontendmentor.io/solutions/foreign-exchange-currency-converter-vite-react-zoJ4tpeYdO)
 - Live Site URL: [Vercel Site](https://foreign-exchange-currency-converter-mocha.vercel.app/?from=USD&to=EUR)
+- Repository: [GitHub](https://github.com/AndJunes/Foreign-exchange-currency-converter)
 
 ## My process
 
