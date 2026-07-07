@@ -17,6 +17,7 @@ This is a solution to the [FX Checker challenge on Frontend Mentor](https://www.
   - [Useful resources](#useful-resources)
 - [Getting started](#getting-started)
   - [Install and run](#install-and-run)
+  - [How to use](#how-to-use)
   - [Testing](#testing)
   - [Project structure](#project-structure)
 - [Accessibility](#accessibility)
@@ -107,6 +108,15 @@ pnpm build      # type-check and build for production
 pnpm preview    # preview the production build
 pnpm lint       # run the linter (no extra setup needed)
 ```
+
+### How to use
+
+A 30-second tour of the main features once the app is running:
+
+1. Type an amount in **Send** and pick the two currencies — the **Receive** value and the rate line update live. The swap button flips the pair.
+2. Press **Favorite** to pin the pair, then open the **Favorites** tab to see it tracked with its latest rate and 24h change (click a row to load it back).
+3. Press **Log conversion** and open the **Log** tab to see the running history, with per-entry delete and clear-all.
+4. In the **History** tab, change the range (1D–5Y) and explore the chart with the mouse or the arrow keys; the **Compare** tab shows your amount converted into every available currency at once.
 
 ### Testing
 
