@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useMemo, useState } from 'react'
-import type { CurrencyCode, FavoritePair, LogEntry, RangeKey, TabKey, Theme } from './types'
+import type { Currency, CurrencyCode, FavoritePair, LogEntry, RangeKey, TabKey, Theme } from './types'
 import { useCurrencies, useMarket } from './hooks/useMarketData'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { convert, crossRate } from './lib/rates'
@@ -20,6 +20,11 @@ function makeId(): string {
   return `${Date.now()}-${Math.round(Math.random() * 1e9)}`
 }
 
+// Guards for persisted state: localStorage may hold legacy or corrupted
+// shapes, and rendering assumes these keys are arrays.
+const isFavoriteArray = (v: unknown): v is FavoritePair[] => Array.isArray(v)
+const isLogArray = (v: unknown): v is LogEntry[] => Array.isArray(v)
+
 /** Pair from the URL (?from=USD&to=EUR) takes precedence over stored state. */
 function pairFromUrl(): { from?: string; to?: string } {
   const p = new URLSearchParams(window.location.search)
@@ -36,8 +41,8 @@ export default function App() {
   const [amount, setAmount] = useLocalStorage<string>('fx.amount', '1000')
   const [tab, setTab] = useLocalStorage<TabKey>('fx.tab', 'history')
   const [range, setRange] = useLocalStorage<RangeKey>('fx.range', '1m')
-  const [favorites, setFavorites] = useLocalStorage<FavoritePair[]>('fx.favorites', [])
-  const [log, setLog] = useLocalStorage<LogEntry[]>('fx.log', [])
+  const [favorites, setFavorites] = useLocalStorage<FavoritePair[]>('fx.favorites', [], isFavoriteArray)
+  const [log, setLog] = useLocalStorage<LogEntry[]>('fx.log', [], isLogArray)
   const [theme, setTheme] = useLocalStorage<Theme>('fx.theme', 'dark')
 
   const [announcement, setAnnouncement] = useState('')
@@ -66,17 +71,15 @@ export default function App() {
 
   const toggleFavorite = useCallback(
     (f: CurrencyCode, t: CurrencyCode) => {
-      setFavorites((prev) => {
-        const exists = prev.some((p) => p.from === f && p.to === t)
-        if (exists) {
-          setAnnouncement(`Unpinned ${f} to ${t}`)
-          return prev.filter((p) => !(p.from === f && p.to === t))
-        }
-        setAnnouncement(`Pinned ${f} to ${t}`)
-        return [...prev, { from: f, to: t }]
-      })
+      // Announce outside the state updater: updaters must stay pure
+      // (StrictMode double-invokes them, which would announce twice).
+      const exists = favorites.some((p) => p.from === f && p.to === t)
+      setAnnouncement(exists ? `Unpinned ${f} to ${t}` : `Pinned ${f} to ${t}`)
+      setFavorites((prev) =>
+        exists ? prev.filter((p) => !(p.from === f && p.to === t)) : [...prev, { from: f, to: t }],
+      )
     },
-    [setFavorites],
+    [favorites, setFavorites],
   )
 
   // ---- log ----
@@ -121,7 +124,16 @@ export default function App() {
   )
 
   const panelId = useId()
-  const currencyList = currencies ?? []
+
+  // If the currency list failed to load, fall back to the codes present in
+  // the market rates so the pickers never dead-end on an empty list.
+  const currencyList = useMemo<Currency[]>(() => {
+    if (currencies) return currencies
+    if (!market) return []
+    return Object.keys(market.latest)
+      .sort()
+      .map((code) => ({ code, name: code }))
+  }, [currencies, market])
 
   return (
     <div className="flex min-h-dvh flex-col">
