@@ -105,7 +105,7 @@ pnpm install
 pnpm dev        # start the dev server
 pnpm build      # type-check and build for production
 pnpm preview    # preview the production build
-pnpm lint       # run oxlint
+pnpm lint       # run the linter (oxlint, no extra setup needed)
 ```
 
 ### Testing
