@@ -22,15 +22,23 @@ export function useListNavigation({
   onClose,
 }: ListNavigationOptions) {
   return function onKeyDown(e: React.KeyboardEvent) {
-    const actions: Record<string, () => void> = {
-      ArrowDown: () => onActiveChange(Math.min(active + 1, length - 1)),
-      ArrowUp: () => onActiveChange(Math.max(active - 1, 0)),
-      Enter: () => onSelect(active),
-      Escape: onClose,
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        onActiveChange(Math.min(active + 1, length - 1))
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        onActiveChange(Math.max(active - 1, 0))
+        break
+      case 'Enter':
+        e.preventDefault()
+        onSelect(active)
+        break
+      case 'Escape':
+        e.preventDefault()
+        onClose()
+        break
     }
-    const action = actions[e.key]
-    if (!action) return
-    e.preventDefault()
-    action()
   }
 }
