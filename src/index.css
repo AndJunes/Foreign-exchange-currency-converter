@@ -1,0 +1,196 @@
+@import "tailwindcss";
+
+/* ---- Local font (self-hosted JetBrains Mono variable) ---- */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/jetbrains-mono/jetbrains-mono-variable.ttf") format("truetype");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---- Design tokens (Tailwind v4 theme) ----
+   Colours resolve to CSS variables so a light theme can override them
+   via [data-theme="light"] below. The brand lime (#cef739) comes from
+   the provided logo. Up = green, down = red for rate deltas. */
+@theme {
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-elevated: var(--elevated);
+  --color-control: var(--control);
+  --color-control-border: var(--control-border);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-heading: var(--heading);
+  --color-label: var(--label);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-deep: var(--accent-deep);
+  --color-pos: var(--pos);
+  --color-pos-dim: var(--pos-dim);
+  --color-neg: var(--neg);
+  --color-neg-dim: var(--neg-dim);
+
+  --animate-ticker: ticker var(--ticker-duration, 45s) linear infinite;
+  --animate-fade-up: fade-up 0.25s ease-out both;
+}
+
+/* Dark-first palette — tokens from the Figma design system:
+   neutral 900 #0a0a0a · 700 #171719 · 600 #202022 · 500 #2e2e2e ·
+   400 #3d3d3d · 200 #9d9d9d · 100 #c6c6c6 · 50 #ffffff
+   lime 500 #cef739 · lime 800 #283300 · green #42eb05 · red #ff4141 */
+:root,
+[data-theme="dark"] {
+  --bg: #0a0a0a; /* neutral 900 */
+  --surface: #171719; /* neutral 700 */
+  --surface-2: #202022; /* neutral 600 */
+  --elevated: #232326;
+  --control: #2e2e2e; /* neutral 500 — currency pill fill */
+  --control-border: #3d3d3d; /* neutral 400 — currency pill border */
+  --border: #202022; /* neutral 600 */
+  --border-strong: #2e2e2e; /* neutral 500 */
+  --text: #ffffff; /* neutral 50 */
+  --heading: #ffffff;
+  --label: #c6c6c6; /* neutral 100 — field labels */
+  --muted: #9d9d9d; /* neutral 200 */
+  --faint: #757578;
+  --accent: #cef739; /* lime 500 */
+  --accent-ink: #0a0a0a;
+  --accent-deep: #283300; /* lime 800 — badge fill */
+  --pos: #42eb05;
+  --pos-dim: color-mix(in oklab, #42eb05 16%, transparent);
+  --neg: #ff4141;
+  --neg-dim: color-mix(in oklab, #ff4141 16%, transparent);
+}
+
+/* Light alternative */
+[data-theme="light"] {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #f0f2f5;
+  --elevated: #ffffff;
+  --control: #e8ebee;
+  --control-border: #cdd3da;
+  --border: #e2e6ea;
+  --border-strong: #cdd3da;
+  --text: #14181d;
+  --heading: #14181d;
+  --label: #4a525c;
+  --muted: #5b6470;
+  --faint: #8a94a0;
+  --accent: #a4c62a;
+  --accent-ink: #0d1004;
+  --accent-deep: #e9f2c6;
+  --pos: #16a34a;
+  --pos-dim: color-mix(in oklab, #16a34a 12%, transparent);
+  --neg: #dc2626;
+  --neg-dim: color-mix(in oklab, #dc2626 12%, transparent);
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes chart-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes chart-ping {
+  0% { transform: scale(1); opacity: 0.6; }
+  75%, 100% { transform: scale(3); opacity: 0; }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    color-scheme: dark;
+  }
+  html[data-theme="light"] {
+    color-scheme: light;
+  }
+  body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "tnum" 1; /* tabular numbers for aligned rates */
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Pointer cursor on everything interactive (Tailwind v4 resets buttons to cursor: default) */
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  [role="tab"],
+  [role="option"],
+  select,
+  summary,
+  label[for],
+  a[href] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+@layer utilities {
+  .tnum { font-variant-numeric: tabular-nums; }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+  }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  /* Line-draw reveal for the history chart (pathLength is normalised to 1) */
+  .chart-draw {
+    stroke-dasharray: 1;
+    animation: chart-draw 0.9s ease-out both;
+  }
+  /* Pulsing halo on the chart's latest data point */
+  .chart-ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: chart-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ticker { animation: none !important; }
+  .animate-fade-up,
+  .chart-draw,
+  .chart-ping { animation: none !important; }
+}
