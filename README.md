@@ -8,6 +8,7 @@ This is a solution to the [FX Checker challenge on Frontend Mentor](https://www.
 
 - [Overview](#overview)
   - [The challenge](#the-challenge)
+  - [Screenshot](#screenshot)
   - [Links](#links)
 - [My process](#my-process)
   - [Built with](#built-with)
@@ -36,6 +37,10 @@ Users should be able to:
 - Keep a running log of conversions (persisted locally), with per-entry delete and clear-all
 - Share or bookmark the active pair via URL query params (`?from=USD&to=EUR`)
 - Use the whole app with the keyboard, on any viewport size (mobile, tablet, desktop), and in dark or light theme
+
+### Screenshot
+
+![FX Checker running: converter, live markets ticker and USD/EUR history chart](./screenshot.png)
 
 ### Links
 
@@ -80,9 +85,9 @@ const ro = new ResizeObserver(([entry]) => {
 
 ### Continued development
 
-- Focus-trap utility for the currency picker popover
 - Offline caching of the last known rates (Service Worker)
 - E2E coverage of the core convert → log flow with Playwright
+- Extract the popover open/close/focus-return behaviour shared by the currency picker and the mobile tabs menu into a reusable hook
 
 ### Useful resources
 
@@ -126,7 +131,7 @@ src/
 
 - Landmarks (`header`, `main`, `footer`, labelled `section`s) and a logical heading hierarchy (`h1` → `h2` → `h3`)
 - Programmatically associated labels on all form controls; live regions (`aria-live`) announce conversion results and favorites changes
-- Full keyboard support: roving-tabindex tabs (arrow keys), searchable currency listbox (arrows/Enter/Escape), focus returned to the trigger when popovers close
+- Full keyboard support: roving-tabindex tabs (arrow keys), searchable currency listbox (arrows/Enter/Escape), focus returned to the trigger when popovers close, and a keyboard-explorable chart (←/→, Home/End) that announces each data point via a live region
 - Decorative icons and flags hidden from assistive tech; visible focus ring on every interactive element
 - `prefers-reduced-motion` disables the ticker marquee and chart animations
 
